@@ -60,6 +60,11 @@ public:
   bool valid(int x, int y) {
     return 0 <= x && x < width && 0 <= y && y < height;
   }
+  void clear(T value) {
+    for(int i = 0; i < width * height; i++) {
+      data[i] = value;
+    }
+  }
 };
 
 void readInput (int& width, int& height) {
@@ -77,6 +82,7 @@ int main () {
 
   Array2d<Node> nodes(width, height);
   Array2d<int> disp((width * 2) + 1, (height * 2) + 1);
+  disp.clear(0);
   vector<Edge> edges;
 
   for(int i = 0; i < height; i++) {
@@ -106,12 +112,13 @@ int main () {
 
   Array2d< pair<int, int> > parent(disp.width, disp.height);
   Array2d<bool> visited(disp.width, disp.height);
+  visited.clear(0);
   queue<pair<int, int>> bfsq;
-  bfsq.emplace(0, 1);
+  bfsq.emplace(disp.width - 1, disp.height - 2);
   while(!bfsq.empty()) {
     pair<int, int> p = bfsq.front();
     bfsq.pop();
-    if(p == make_pair(disp.width - 1, disp.height - 2)) break;
+    if(p == make_pair(0, 1)) break;
     *visited.get(p.first, p.second) = 1;
     for(int i = -1; i <= 1; i++) {
       if( parent.valid(p.first + i, p.second) && !*visited.get(p.first + i, p.second) && *disp.get(p.first + i, p.second) ) {
@@ -126,8 +133,8 @@ int main () {
       }
     }
   }
-  int curx = disp.width - 1, cury = disp.height - 2;
-  while(make_pair(curx, cury) != make_pair(0, 1)){
+  int curx = 0, cury = 1;
+  while(make_pair(curx, cury) != make_pair(disp.width - 1, disp.height - 2)){
     *disp.get(curx, cury) = 2;
     tie(curx, cury) = *parent.get(curx, cury);
   }
